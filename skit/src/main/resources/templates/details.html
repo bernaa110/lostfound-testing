@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Детали</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sofia+Pro:wght@400;700&display=swap" rel="stylesheet">
+
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #F0F0F0;
+            margin: 0;
+            padding: 0;
+        }
+
+        .details-page {
+            font-family: 'Sofia Pro', sans-serif;
+            font-style: normal;
+            font-weight: 100;
+            padding: 20px;
+            margin: 0 auto;
+        }
+
+        .details-page a {
+            text-decoration: none;
+            color: #5072A7;
+            margin-right: 10px;
+        }
+
+        .details-page h2 {
+            color: #13274F;
+            text-align: center;
+            font-weight: 100;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .details-page .details-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            align-items: flex-start;
+        }
+
+        .details-page img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+
+        .details-page table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .details-page th, .details-page td {
+            text-align: center;
+            padding: 8px;
+            border: none;
+        }
+
+        .details-page th {
+            color: #13274F;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .details-page td {
+            text-align: left;
+        }
+
+        .details-page .actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .details-page .actions a, .details-page .actions button, .custom-button {
+            margin-right: 10px;
+            padding: 8px 16px;
+            cursor: pointer;
+            border-radius: 3px;
+            text-decoration: none;
+            text-align: center;
+            background-color: #5072A7;
+            color: white;
+            border: none;
+        }
+
+        .details-page .actions a:hover, .details-page .actions button:hover, .custom-button:hover {
+            background-color: #13274F;
+        }
+    </style>
+</head>
+<body>
+<main class="details-page container">
+
+    <div class="details-container">
+        <a href="/item/add" class="nav-link px-2 text-white">Пријави</a>
+        <div class="row m-auto">
+            <h2 th:text="${item.type.getTypeName()}">Детали</h2>
+            <h2>Детали</h2>
+            <div class="col-md-4">
+                <div>
+                    <img th:if="${not item.base64Image.isEmpty()}"
+                         th:src="@{'data:image/jpeg;base64,' + ${item.base64Image}}"
+                         alt="Item Image" />
+                    <img th:unless="${not item.base64Image.isEmpty()}"
+                         th:src="@{/image.png}"
+                         alt="Item Image" />
+                </div>
+            </div>
+            <div class="col-md-8">
+                <table class="table">
+                    <tr th:if="${item.handover == null}">
+                        <th>Предадено</th>
+                        <td>
+                            <input type="checkbox" th:checked="${item.handover} "/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Име</th>
+                        <td th:text="${item.name}"></td>
+                    </tr>
+                    <tr>
+                        <th>Датум</th>
+                        <td th:text="${item.dateIssueCreated}"></td>
+                    </tr>
+                    <tr>
+                        <th>Локација</th>
+                        <td th:text="${item.location}"></td>
+                    </tr>
+
+                    <tr>
+                        <th>Категoрија</th>
+                        <td th:text="${item.category.getCategoryName()}"></td>
+                    </tr>
+                    <tr>
+                        <th>Опис</th>
+                        <td th:text="${item.description}"></td>
+                    </tr>
+                    <tr th:if="${item.handover != null}">
+                        <th>Предадено</th>
+                        <td th:text="${item.handover ? 'Да' : 'Не'}"></td>
+                    </tr>
+                </table>
+
+            </div>
+            <div class="actions">
+                <a th:href="@{'/item/{id}/edit' (id=${item.id})}" class="btn btn-secondary">Промени</a>
+                <form method="post" th:action="@{'/item/{id}/delete' (id=${item.id})}" class="delete-form">
+                    <button type="submit" style="background-color: darkred !important;">Избриши</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <br>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

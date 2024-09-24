@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Sofia+Pro:wght@400;700&display=swap" rel="stylesheet">
+
+    <title>Пријава</title>
+    <style>
+        .form-page {
+            font-family: sofia-pro, sans-serif;
+            font-style: normal;
+            font-weight: 100;
+            background-color: #F0F0F0;
+            padding: 20px;
+        }
+
+        .form-page a {
+            text-decoration: none;
+            color: #13274F;
+            background-color: transparent;
+
+        }
+
+        .form-page a button {
+            text-decoration: none;
+            color: #13274F;
+            background-color: transparent;
+
+        }
+
+        .form-page h2 {
+            color: #13274F;
+            text-align: center;
+            font-family: sofia-pro, sans-serif;
+            font-style: normal;
+            font-weight: 100;
+        }
+
+        .form-page .form-container {
+            width: calc(100% - 140px);
+            margin: auto;
+            background-color: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+        }
+
+        .form-page label {
+            display: inline-block;
+            width: 120px;
+            font-weight: bold;
+        }
+
+        .form-page input[type="text"],
+        .form-page select,
+        .form-page input[type="date"],
+        .form-page textarea {
+            border: 1px solid #CCCCCC;
+            border-radius: 3px;
+        }
+
+        .form-page input[type="file"] {
+            border: none;
+            border-radius: 0;
+        }
+
+        .form-page button[type="submit"],
+        .form-page .btn {
+            background-color: #5072A7;
+            border: none;
+            color: #FFFFFF;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 3px;
+            text-decoration: none;
+            text-align: center;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body style="background-color: #F0F0F0;">
+<main class="form-page">
+
+    <div class="container">
+        <div class="form-container">
+            <h2>Форма за пријава</h2>
+            <form th:action="@{${item.id} ? @{/item/{id}(id=${item.id})} : @{/item}}" th:object="${item}" method="post"
+                  enctype="multipart/form-data">
+
+                <div class="form-group row pt-4 pb-2">
+                    <label for="f1" class="col-sm-2 col-form-label">Име</label>
+                    <div class="col-sm-10">
+                        <input type="text" id="f1" name="name" class="form-control" th:value="${item?.name}" required>
+                    </div>
+                </div>
+
+                <div class="form-group row pt-4 pb-2">
+                    <label for="f8" class="col-sm-2 col-form-label">Категорија</label>
+                    <div class="col-sm-10">
+                        <select id="f8" name="category" required class="form-control">
+                            <option th:if="${#lists.isEmpty(item?.category)}" value="">----</option>
+                            <option th:each="cat: ${category}" th:text="${cat.getCategoryName()}" th:value="${cat}"
+                                    th:selected="${item.category == cat}"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group row pt-4 pb-2">
+                    <label for="f2" class="col-sm-2 col-form-label">Опис</label>
+                    <div class="col-sm-10">
+                        <textarea id="f2" name="description" class="form-control" rows="4" th:text="${item.description}"
+                                  required></textarea>
+                    </div>
+                </div>
+
+                <div class="form-group row pt-4 pb-2">
+                    <label for="f6" class="col-sm-2 col-form-label">Датум</label>
+                    <div class="col-sm-3">
+                        <input type="date" id="f6" name="dateIssueCreated" class="form-control"
+                               th:value="${item?.dateIssueCreated}" required>
+                    </div>
+                </div>
+
+                <div class="form-group row pt-4 pb-2">
+                    <label for="f9" class="col-sm-2 col-form-label">Локација</label>
+                    <div class="col-sm-10">
+                        <input type="text" id="f9" name="location" class="form-control" th:value="${item?.location}"
+                               required>
+                    </div>
+                </div>
+                <div class="form-group row pt-4 pb-2">
+                    <label for="f5" class="col-sm-2 col-form-label">Тип</label>
+                    <div class="col-sm-10">
+                        <select id="f5" name="type" class="form-control" required>
+                            <option th:if="${#lists.isEmpty(item?.type)}" value="">----</option>
+                            <option th:each="type: ${types}" th:text="${type.getTypeName()}" th:value="${type}"
+                                    th:selected="${item.type == type}"></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group row pt-4 pb-2">
+                    <label for="imageFile" class="col-sm-2 col-form-label">Слика</label>
+                    <div class="col-sm-10">
+                        <div id="imagePreview" th:if="${item.base64Image != null}">
+                            <img th:src="@{'data:image/jpeg;base64,' + ${item.base64Image}}" class="img-fluid"
+                                 style="max-width: 150px"/>
+                        </div>
+                        <input type="file" id="imageFile" name="imageFile" class="form-control-file"
+                               accept=".jpg,.jpeg,.png" onchange="previewImage()">
+                    </div>
+                </div>
+
+            <div class="form-check pt-4 pb-2" th:if="${item.id!=null}">
+                    <input type="checkbox" id="handover" name="handover" class="form-check-input"
+                           th:checked="${item?.handover}">
+                    <label for="handover" class="form-check-label">Предадено</label>
+
+                </div>
+
+                <button id="submit" type="submit" class="btn btn-primary btn-block">Пријави</button>
+
+            </form>
+        </div>
+    </div>
+    <script>
+        function previewImage() {
+            var preview = document.getElementById('imagePreview');
+            var fileInput = document.getElementById('imageFile');
+
+            if (fileInput.files && fileInput.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    var img = new Image();
+                    img.src = e.target.result;
+                    img.className = 'img-fluid';
+                    img.style.maxWidth = '150px';
+
+                    preview.innerHTML = '';
+                    preview.appendChild(img);
+                }
+
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                preview.innerHTML = '';
+            }
+        }
+    </script>
+</main>
+</body>
+</html>
